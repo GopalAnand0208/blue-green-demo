@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-$COLOR_TEST
+  labels:
+    app: myapp
+    color: $COLOR_TEST
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      color: $COLOR_TEST
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: myapp
+        color: $COLOR_TEST
+    spec:
+      imagePullSecrets:
+      - name: dockerhub
+      containers:
+      - name: myapp
+        image: $DOCKER_USERNAME/myapp:$SEMAPHORE_WORKFLOW_ID
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+        env:
