@@ -1,33 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp-$COLOR_TEST
-  labels:
-    app: myapp
-    color: $COLOR_TEST
+  name: todo-deployment-$TARGET_ROLE
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: myapp
-      color: $COLOR_TEST
-  strategy:
-    type: Recreate
+      app: todo
+      role: $TARGET_ROLE
   template:
     metadata:
       labels:
-        app: myapp
-        color: $COLOR_TEST
+        app: todo
+        role: $TARGET_ROLE
     spec:
-      imagePullSecrets:
-      - name: dockerhub
       containers:
-      - name: myapp
-        image: $DOCKER_USERNAME/myapp:$SEMAPHORE_WORKFLOW_ID
+      - name: todo-$TARGET_ROLE
+        image: $IMAGE_VERSION
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         readinessProbe:
           httpGet:
-            path: /ready
-            port: 3000
-        env:
+            path: /
+            port: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+        resources:
+          limits:
+            memory: "128Mi" #128 MB
+            cpu: "200m" #200 millicpu (.2 cpu or 20% of the cpu)

@@ -1,16 +1,16 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: todo-service
+  name: todo-blue-test
   labels:
     app: todo
-    role: $TARGET_ROLE
-    env: prod
+    role: blue-test
+    env: test
 spec:
   type: LoadBalancer
   selector:
     app: todo
-    role: $TARGET_ROLE
+    role: blue
   ports:
-    - port: 80
+    - port: 9000
       targetPort: 80
