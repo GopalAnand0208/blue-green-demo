@@ -1,15 +1,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: todo-green-test
+  name: nginx-green-test
   labels:
-    app: todo
+    app: nginx
     role: green-test
     env: test
 spec:
   type: LoadBalancer
   selector:
-    app: todo
+    app: nginx
     role: green
   ports:
     - port: 9001

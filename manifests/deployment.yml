@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todo-deployment-$TARGET_ROLE
+  name: nginx-deployment-$TARGET_ROLE
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: todo
+      app: nginx
       role: $TARGET_ROLE
   template:
     metadata:
       labels:
-        app: todo
+        app: nginx
         role: $TARGET_ROLE
     spec:
       containers:
-      - name: todo-$TARGET_ROLE
+      - name: nginx-$TARGET_ROLE
         image: $IMAGE_VERSION
         imagePullPolicy: IfNotPresent
         ports:

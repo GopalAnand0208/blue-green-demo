@@ -1,15 +1,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: todo-service
+  name: nginx-service
   labels:
-    app: todo
+    app: nginx
     role: $TARGET_ROLE
     env: prod
 spec:
   type: LoadBalancer
   selector:
-    app: todo
+    app: nginx
     role: $TARGET_ROLE
   ports:
     - port: 80
