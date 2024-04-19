@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+## Instructions
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Note that Docker Desktop must be installed and running (Kubernetes support must also be enabled) or another Kubernetes option such as Minikube can be used.
 
-## Available Scripts
+1. `cd manifests` into the root of this folder in a command window
+2. Run `docker-compose build` to build the images that will be used for Blue-Green testing
+3. Run the following commands based on your OS
 
-In the project directory, you can run:
+    ### Mac/Linux
 
-### `npm start`
+    Define environment variables for green
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    `export TARGET_ROLE=blue`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    `export IMAGE_VERSION=nginx-blue`
 
-### `npm test`
+    Run a script to apply the environment variables to the deployment files
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    `cat deployment.yml | sh config.sh | kubectl create --save-config -f -`
 
-### `npm run build`
+    `cat service.yml | sh config.sh | kubectl create --save-config -f -`
+    
+    `kubectl create -f blue-test.service.yml`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    ### Windows
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    Define environment variables for green
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    `$Env:TARGET_ROLE="blue"`
 
-### `npm run eject`
+    `$Env:IMAGE_VERSION="nginx-blue"`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    Run a script to apply the environment variables to the deployment files
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    `cat deployment.yml | ./config.ps1 | kubectl create --save-config -f -`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    `cat service.yml | ./config.ps1 | kubectl create --save-config -f -`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    `kubectl create -f blue-test.service.yml`
 
-## Learn More
+### Switch to Green Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Set the environment variables shown earlier (commands are shown above) to `green` and `nginx-green` respectively. 
+2. Run the Deployment command again to get the green Deployment running:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    ### Mac/Linux
 
-### Code Splitting
+    `cat deployment.yml | sh config.sh | kubectl create --save-config -f -`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    ### Windows
 
-### Analyzing the Bundle Size
+    `cat deployment.yml | ./config.ps1 | kubectl create --save-config -f -`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+3. Create the green test Service:
 
-### Making a Progressive Web App
+    `kubectl create -f green-test.service.yml --save-config`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+4. Visit `http://localhost:9001` to ensure the green app is working correctly. 
+5. If it is working properly, run the following command to switch the "public" service to the green Deployment:
 
-### Advanced Configuration
+    **Mac/Linux**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+    `cat service.yml | sh config.sh | kubectl apply -f -`
 
-### Deployment
+    **Windows**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+    `cat service.yml | ./config.ps1 | kubectl apply -f -`
 
-### `npm run build` fails to minify
+6. Visit `http://localhost` and notice that the green Deployment is now being hit using the "public" service.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+7. Delete the blue test service and deployment once done.
