@@ -9,6 +9,6 @@ tee
 # To run deployment:
 # cat deployment.yml | sh config.sh | kubectl create --save-config -f -
 # cat service.yml | sh config.sh | kubectl create --save-config -f -
-# kubectl create -f nginx-blue-test.service.yml --save-config
+# kubectl create -f blue-test.service.yml --save-config
 
 # To run for green change the environment vars and run the same steps above
